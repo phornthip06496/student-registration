@@ -1,0 +1,77 @@
+
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ลงทะเบียนนักศึกษา</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script defer src="app.js"></script>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1>ระบบลงทะเบียนนักศึกษา</h1>
+    <p>กรอกข้อมูลเพื่อสมัครลงทะเบียนนักศึกษา</p>
+  </div>
+
+  <form id="registerForm">
+
+    <label>ชื่อ</label>
+    <input type="text" id="first_name" required placeholder="กรอกชื่อ">
+
+    <label>นามสกุล</label>
+    <input type="text" id="last_name" required placeholder="กรอกนามสกุล">
+
+    <label>อายุ</label>
+    <input type="number" id="age" min="1" max="120" required placeholder="กรอกอายุ">
+
+    <label>แผนก</label>
+    <select id="department" required>
+      <option value="">-- เลือกแผนก --</option>
+      <option>เทคโนโลยีสารสนเทศ</option>
+      <option>ช่างยนต์</option>
+      <option>ช่างไฟฟ้า</option>
+      <option>ช่างกลโรงงาน</option>
+      <option>ช่างเชื่อมโลหะ</option>
+      <option>โยธา</option>
+      <option>การบัญชี</option>
+      <option>การตลาด</option>
+      <option>เทคโนโลยีดิจิทัล</option>
+    </select>
+
+    <label>สาขา</label>
+    <input type="text" id="major" required placeholder="กรอกสาขาวิชา">
+
+    <label>เลขนักศึกษา</label>
+    <input type="text" id="student_id" required placeholder="กรอกเลขนักศึกษา">
+
+    <label>ระดับชั้น</label>
+    <select id="level" required>
+      <option value="">-- เลือกระดับชั้น --</option>
+      <option>ปวช.1</option>
+      <option>ปวช.2</option>
+      <option>ปวช.3</option>
+      <option>ปวส.1</option>
+      <option>ปวส.2</option>
+    </select>
+
+    <label>คติประจำใจ</label>
+    <textarea id="motto" required placeholder="กรอกคติประจำใจ"></textarea>
+
+    <button type="submit" id="submitBtn">
+      ลงทะเบียน
+    </button>
+
+    <p id="message"></p>
+  </form>
+
+  <div class="footer">
+    ระบบลงทะเบียนนักศึกษาออนไลน์
+  </div>
+</div>
+
+</body>
+</html>

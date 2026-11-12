@@ -1,0 +1,193 @@
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Tahoma, sans-serif;
+  background: #eef3fb;
+  margin: 0;
+  padding: 25px 12px;
+  color: #26344a;
+}
+
+.container {
+  max-width: 650px;
+  margin: auto;
+  background: white;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 5px 25px rgba(0,0,0,0.08);
+}
+
+.header {
+  text-align: center;
+  background: #2563eb;
+  color: white;
+  padding: 22px 12px;
+  border-radius: 12px;
+  margin-bottom: 25px;
+}
+
+.header h1 {
+  font-size: 25px;
+  margin: 0 0 10px;
+}
+
+.header p {
+  margin: 0;
+}
+
+label {
+  display: block;
+  margin: 15px 0 7px;
+  font-weight: bold;
+}
+
+input, select, textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccd5e3;
+  border-radius: 8px;
+  font-size: 15px;
+  outline: none;
+  background: white;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: #2563eb;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 90px;
+}
+
+button {
+  width: 100%;
+  margin-top: 22px;
+  padding: 13px;
+  border: none;
+  border-radius: 8px;
+  background: #2563eb;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #1d4ed8;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+#message, #loginMessage, #adminMessage {
+  text-align: center;
+  margin-top: 15px;
+}
+
+.footer {
+  text-align: center;
+  margin-top: 25px;
+  color: #8490a3;
+  font-size: 13px;
+}
+
+/* ADMIN */
+
+.admin-container {
+  max-width: 1200px;
+}
+
+.dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.logout {
+  width: auto;
+  margin: 0;
+  background: #dc3545;
+}
+
+.refresh {
+  width: auto;
+  padding: 10px 20px;
+  margin-bottom: 15px;
+}
+
+.stats {
+  background: #eaf1ff;
+  border-radius: 10px;
+  padding: 15px;
+  margin: 20px 0;
+}
+
+.stat-card h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.stat-card p {
+  font-size: 30px;
+  font-weight: bold;
+  color: #2563eb;
+  margin: 10px 0 0;
+}
+
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 900px;
+  font-size: 14px;
+}
+
+th {
+  background: #2563eb;
+  color: white;
+  padding: 13px;
+}
+
+td {
+  border: 1px solid #e1e6ef;
+  padding: 12px;
+  text-align: center;
+}
+
+tr:nth-child(even) {
+  background: #f3f6fc;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+@media(max-width: 600px) {
+  .container {
+    padding: 18px;
+  }
+
+  .header h1 {
+    font-size: 20px;
+  }
+
+  .dashboard-header {
+    align-items: stretch;
+  }
+
+  .logout {
+    width: 100%;
+  }
+}
