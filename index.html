@@ -1,77 +1,68 @@
-
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ลงทะเบียนนักศึกษา</title>
-<link rel="stylesheet" href="style.css">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script defer src="app.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ลงทะเบียนนักศึกษา</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script defer src="app.js"></script>
 </head>
 <body>
+  <main class="container">
+    <header class="header">
+      <h1>ระบบลงทะเบียนนักศึกษา</h1>
+      <p>กรอกข้อมูลเพื่อสมัครลงทะเบียนนักศึกษา</p>
+    </header>
 
-<div class="container">
-  <div class="header">
-    <h1>ระบบลงทะเบียนนักศึกษา</h1>
-    <p>กรอกข้อมูลเพื่อสมัครลงทะเบียนนักศึกษา</p>
-  </div>
+    <form id="registerForm">
+      <label for="first_name">ชื่อ</label>
+      <input type="text" id="first_name" required placeholder="กรอกชื่อ">
 
-  <form id="registerForm">
+      <label for="last_name">นามสกุล</label>
+      <input type="text" id="last_name" required placeholder="กรอกนามสกุล">
 
-    <label>ชื่อ</label>
-    <input type="text" id="first_name" required placeholder="กรอกชื่อ">
+      <label for="age">อายุ</label>
+      <input type="number" id="age" min="1" max="120" required placeholder="กรอกอายุ">
 
-    <label>นามสกุล</label>
-    <input type="text" id="last_name" required placeholder="กรอกนามสกุล">
+      <label for="department">แผนก</label>
+      <select id="department" required>
+        <option value="">-- เลือกแผนก --</option>
+        <option value="เทคโนโลยีสารสนเทศ">เทคโนโลยีสารสนเทศ</option>
+        <option value="ช่างยนต์">ช่างยนต์</option>
+        <option value="ช่างไฟฟ้า">ช่างไฟฟ้า</option>
+        <option value="ช่างกลโรงงาน">ช่างกลโรงงาน</option>
+        <option value="ช่างเชื่อมโลหะ">ช่างเชื่อมโลหะ</option>
+        <option value="โยธา">โยธา</option>
+        <option value="การบัญชี">การบัญชี</option>
+        <option value="การตลาด">การตลาด</option>
+        <option value="เทคโนโลยีดิจิทัล">เทคโนโลยีดิจิทัล</option>
+      </select>
 
-    <label>อายุ</label>
-    <input type="number" id="age" min="1" max="120" required placeholder="กรอกอายุ">
+      <label for="major">สาขา</label>
+      <input type="text" id="major" required placeholder="กรอกสาขาวิชา">
 
-    <label>แผนก</label>
-    <select id="department" required>
-      <option value="">-- เลือกแผนก --</option>
-      <option>เทคโนโลยีสารสนเทศ</option>
-      <option>ช่างยนต์</option>
-      <option>ช่างไฟฟ้า</option>
-      <option>ช่างกลโรงงาน</option>
-      <option>ช่างเชื่อมโลหะ</option>
-      <option>โยธา</option>
-      <option>การบัญชี</option>
-      <option>การตลาด</option>
-      <option>เทคโนโลยีดิจิทัล</option>
-    </select>
+      <label for="student_id">เลขนักศึกษา</label>
+      <input type="text" id="student_id" required placeholder="กรอกเลขนักศึกษา">
 
-    <label>สาขา</label>
-    <input type="text" id="major" required placeholder="กรอกสาขาวิชา">
+      <label for="level">ระดับชั้น</label>
+      <select id="level" required>
+        <option value="">-- เลือกระดับชั้น --</option>
+        <option value="ปวช.1">ปวช.1</option>
+        <option value="ปวช.2">ปวช.2</option>
+        <option value="ปวช.3">ปวช.3</option>
+        <option value="ปวส.1">ปวส.1</option>
+        <option value="ปวส.2">ปวส.2</option>
+      </select>
 
-    <label>เลขนักศึกษา</label>
-    <input type="text" id="student_id" required placeholder="กรอกเลขนักศึกษา">
+      <label for="motto">คติประจำใจ</label>
+      <textarea id="motto" required placeholder="กรอกคติประจำใจ"></textarea>
 
-    <label>ระดับชั้น</label>
-    <select id="level" required>
-      <option value="">-- เลือกระดับชั้น --</option>
-      <option>ปวช.1</option>
-      <option>ปวช.2</option>
-      <option>ปวช.3</option>
-      <option>ปวส.1</option>
-      <option>ปวส.2</option>
-    </select>
+      <button type="submit" id="submitBtn">ลงทะเบียน</button>
+      <p id="message" class="message" role="status" aria-live="polite"></p>
+    </form>
 
-    <label>คติประจำใจ</label>
-    <textarea id="motto" required placeholder="กรอกคติประจำใจ"></textarea>
-
-    <button type="submit" id="submitBtn">
-      ลงทะเบียน
-    </button>
-
-    <p id="message"></p>
-  </form>
-
-  <div class="footer">
-    ระบบลงทะเบียนนักศึกษาออนไลน์
-  </div>
-</div>
-
+    <footer class="footer">ระบบลงทะเบียนนักศึกษาออนไลน์</footer>
+  </main>
 </body>
 </html>

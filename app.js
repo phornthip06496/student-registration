@@ -1,37 +1,32 @@
-// ===================================
-// 1. เชื่อมต่อ Supabase
-// ===================================
+// ========================================
+// ตั้งค่า Supabase
+// ใช้ Project URL และ Publishable/anon key เท่านั้น
+// ห้ามใส่ service_role หรือ secret key ในไฟล์นี้
+// ========================================
 
 const SUPABASE_URL = "https://lttdoaokuesnyactnfoq.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_C4XVlrmTB4kGDXjL-xmR3A_0xaNgEJg";
 
-const SUPABASE_ANON_KEY =
-  "sb_publishable_C4XVlrmTB4kGDXjL-xmR3A_0xaNgEJg";
+if (!window.supabase) {
+  console.error("โหลด Supabase library ไม่สำเร็จ กรุณาตรวจสอบอินเทอร์เน็ต");
+  alert("ไม่สามารถโหลด Supabase ได้ กรุณารีเฟรชหน้าเว็บ");
+}
 
-const db = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_ANON_KEY
-);
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 
-// ===================================
-// 2. ระบบลงทะเบียนนักศึกษา
-// ===================================
+// ========================================
+// 1) หน้าลงทะเบียนนักศึกษา (index.html)
+// ========================================
 
 const registerForm = document.getElementById("registerForm");
 
 if (registerForm) {
-  registerForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
+  registerForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
 
-    const btn = document.getElementById("submitBtn");
+    const button = document.getElementById("submitBtn");
     const message = document.getElementById("message");
-
-    if (btn) {
-      btn.disabled = true;
-      btn.textContent = "กำลังบันทึก...";
-    }
-
-    if (message) message.textContent = "";
 
     const student = {
       first_name: document.getElementById("first_name").value.trim(),
@@ -44,6 +39,18 @@ if (registerForm) {
       motto: document.getElementById("motto").value.trim()
     };
 
+    if (!student.first_name || !student.last_name || !student.student_id ||
+        !student.department || !student.major || !student.level ||
+        !student.motto || !Number.isInteger(student.age) || student.age < 1) {
+      message.textContent = "กรุณากรอกข้อมูลให้ครบและตรวจสอบอายุ";
+      message.style.color = "red";
+      return;
+    }
+
+    button.disabled = true;
+    button.textContent = "กำลังบันทึก...";
+    message.textContent = "";
+
     try {
       const { error } = await db
         .from("registrations")
@@ -51,96 +58,75 @@ if (registerForm) {
 
       if (error) throw error;
 
-      if (message) {
-        message.textContent = "ลงทะเบียนสำเร็จแล้ว!";
-        message.style.color = "green";
-      }
-
+      message.textContent = "ลงทะเบียนสำเร็จแล้ว!";
+      message.style.color = "green";
       registerForm.reset();
 
     } catch (error) {
-      if (message) {
-        message.textContent = "เกิดข้อผิดพลาด: " + error.message;
-        message.style.color = "red";
-      }
+      console.error("Registration error:", error);
+      message.textContent = "บันทึกไม่สำเร็จ: " + error.message;
+      message.style.color = "red";
 
     } finally {
-      if (btn) {
-        btn.disabled = false;
-        btn.textContent = "ลงทะเบียน";
-      }
+      button.disabled = false;
+      button.textContent = "ลงทะเบียน";
     }
   });
 }
 
 
-// ===================================
-// 3. ระบบ Admin Login
-// ===================================
+// ========================================
+// 2) ระบบเข้าสู่ระบบ Admin (admin.html)
+// ========================================
 
 const loginForm = document.getElementById("loginForm");
 
 if (loginForm) {
-  loginForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
+  loginForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
 
     const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value;
     const message = document.getElementById("loginMessage");
+    const button = document.getElementById("loginBtn");
 
-    const loginBtn = loginForm.querySelector(
-      'button[type="submit"], input[type="submit"]'
-    );
-
-    if (loginBtn) loginBtn.disabled = true;
-
-    if (message) {
-      message.textContent = "กำลังเข้าสู่ระบบ...";
-      message.style.color = "blue";
-    }
+    button.disabled = true;
+    message.textContent = "กำลังเข้าสู่ระบบ...";
+    message.style.color = "#2563eb";
 
     try {
-      const { error } = await db.auth.signInWithPassword({
-        email,
-        password
-      });
-
+      const { error } = await db.auth.signInWithPassword({ email, password });
       if (error) throw error;
 
-      const isAdmin = await checkAdmin();
+      const allowed = await checkAdmin();
 
-      if (!isAdmin) {
-        throw new Error("บัญชีนี้ไม่มีสิทธิ์เข้าใช้งาน Admin");
+      if (!allowed) {
+        await db.auth.signOut();
+        throw new Error("บัญชีนี้ยังไม่ได้รับสิทธิ์ Admin");
       }
 
-      if (message) {
-        message.textContent = "เข้าสู่ระบบสำเร็จ";
-        message.style.color = "green";
-      }
-
+      message.textContent = "";
     } catch (error) {
-      if (message) {
-        message.textContent = error.message;
-        message.style.color = "red";
-      }
-
-      await db.auth.signOut();
-
+      console.error("Login error:", error);
+      message.textContent = error.message;
+      message.style.color = "red";
     } finally {
-      if (loginBtn) loginBtn.disabled = false;
+      button.disabled = false;
     }
   });
 }
 
 
-// ===================================
-// 4. ตรวจสอบสิทธิ์ Admin
-// ===================================
+// ========================================
+// 3) ตรวจสอบ Session และสิทธิ์ Admin
+// สิทธิ์จริงต้องถูกบังคับโดย RLS ใน Supabase ด้วย
+// ========================================
 
 async function checkAdmin() {
   const dashboard = document.getElementById("dashboard");
   const loginBox = document.getElementById("loginBox");
 
+  // ฟังก์ชันนี้ใช้เฉพาะหน้า admin.html
   if (!dashboard) return false;
 
   try {
@@ -157,28 +143,17 @@ async function checkAdmin() {
       return false;
     }
 
-    // ตรวจสอบว่า user_id อยู่ในตาราง admin_users หรือไม่
-    const { data: admin, error } = await db
+    const { data: admin, error: adminError } = await db
       .from("admin_users")
       .select("user_id")
       .eq("user_id", session.user.id)
       .maybeSingle();
 
-    if (error) throw error;
+    if (adminError) throw adminError;
 
     if (!admin) {
       dashboard.hidden = true;
       if (loginBox) loginBox.hidden = false;
-
-      await db.auth.signOut();
-
-      const message = document.getElementById("loginMessage");
-
-      if (message) {
-        message.textContent = "บัญชีนี้ไม่มีสิทธิ์ Admin";
-        message.style.color = "red";
-      }
-
       return false;
     }
 
@@ -186,135 +161,145 @@ async function checkAdmin() {
     dashboard.hidden = false;
 
     await loadStudents();
-
     return true;
 
   } catch (error) {
-    console.error("Admin check error:", error);
-
+    console.error("Admin verification error:", error);
     dashboard.hidden = true;
     if (loginBox) loginBox.hidden = false;
 
-    const message = document.getElementById("adminMessage");
-
-    if (message) {
-      message.textContent =
-        "ตรวจสอบสิทธิ์ไม่สำเร็จ: " + error.message;
-      message.style.color = "red";
+    const adminMessage = document.getElementById("adminMessage");
+    if (adminMessage) {
+      adminMessage.textContent = "ตรวจสอบสิทธิ์ไม่สำเร็จ: " + error.message;
+      adminMessage.style.color = "red";
     }
-
     return false;
   }
 }
 
 
-// ===================================
-// 5. แสดงข้อมูลนักศึกษา
-// ===================================
+// ========================================
+// 4) โหลดข้อมูลนักศึกษามาแสดงใน Dashboard
+// ========================================
 
 async function loadStudents() {
   const table = document.getElementById("studentTable");
-  const message = document.getElementById("adminMessage");
   const total = document.getElementById("totalStudents");
+  const message = document.getElementById("adminMessage");
 
   if (!table) return;
 
-  table.innerHTML =
-    "<tr><td colspan='8'>กำลังโหลดข้อมูล...</td></tr>";
+  table.innerHTML = "<tr><td colspan='8'>กำลังโหลดข้อมูล...</td></tr>";
+  if (message) message.textContent = "";
 
   try {
+    // ตรวจสิทธิ์ซ้ำก่อนอ่านข้อมูล
+    const { data: sessionData, error: sessionError } =
+      await db.auth.getSession();
+
+    if (sessionError) throw sessionError;
+    if (!sessionData.session) throw new Error("กรุณาเข้าสู่ระบบใหม่");
+
+    const { data: admin, error: adminError } = await db
+      .from("admin_users")
+      .select("user_id")
+      .eq("user_id", sessionData.session.user.id)
+      .maybeSingle();
+
+    if (adminError) throw adminError;
+    if (!admin) throw new Error("ไม่มีสิทธิ์เข้าถึงข้อมูล");
+
     const { data, error } = await db
       .from("registrations")
-      .select("*")
+      .select("id, first_name, last_name, age, department, major, student_id, level, motto")
       .order("id", { ascending: false });
 
     if (error) throw error;
 
-    if (total) total.textContent = data.length;
-
+    total.textContent = data.length;
     table.innerHTML = "";
 
     if (data.length === 0) {
-      table.innerHTML =
-        "<tr><td colspan='8'>ยังไม่มีข้อมูลนักศึกษา</td></tr>";
+      table.innerHTML = "<tr><td colspan='8'>ยังไม่มีข้อมูลนักศึกษา</td></tr>";
       return;
     }
 
-    data.forEach((s, index) => {
-      const tr = document.createElement("tr");
-
+    data.forEach((student, index) => {
+      const row = document.createElement("tr");
       const values = [
         index + 1,
-        `${s.first_name || ""} ${s.last_name || ""}`,
-        s.age ?? "-",
-        s.department || "-",
-        s.major || "-",
-        s.student_id || "-",
-        s.level || "-",
-        s.motto || "-"
+        `${student.first_name || ""} ${student.last_name || ""}`.trim(),
+        student.age ?? "-",
+        student.department || "-",
+        student.major || "-",
+        student.student_id || "-",
+        student.level || "-",
+        student.motto || "-"
       ];
 
-      values.forEach(value => {
-        const td = document.createElement("td");
-        td.textContent = String(value);
-        tr.appendChild(td);
+      values.forEach((value) => {
+        const cell = document.createElement("td");
+        // ใช้ textContent เพื่อไม่ให้ข้อความจากฟอร์มถูกแปลเป็น HTML
+        cell.textContent = String(value);
+        row.appendChild(cell);
       });
 
-      table.appendChild(tr);
+      table.appendChild(row);
     });
 
-    if (message) message.textContent = "";
-
   } catch (error) {
-    table.innerHTML = "";
+    console.error("Load students error:", error);
+    table.innerHTML = "<tr><td colspan='8'>ไม่สามารถโหลดข้อมูลได้</td></tr>";
 
     if (message) {
-      message.textContent =
-        "ไม่สามารถโหลดข้อมูลได้: " + error.message;
+      message.textContent = "เกิดข้อผิดพลาด: " + error.message;
       message.style.color = "red";
     }
-
-    console.error(error);
   }
 }
 
 
-// ===================================
-// 6. ปุ่มรีเฟรชข้อมูล
-// ===================================
+// ========================================
+// 5) ปุ่มรีเฟรชข้อมูล
+// ========================================
 
-const refreshBtn = document.getElementById("refreshBtn");
+const refreshButton = document.getElementById("refreshBtn");
 
-if (refreshBtn) {
-  refreshBtn.addEventListener("click", async () => {
+if (refreshButton) {
+  refreshButton.addEventListener("click", async () => {
+    refreshButton.disabled = true;
     await loadStudents();
+    refreshButton.disabled = false;
   });
 }
 
 
-// ===================================
-// 7. ระบบออกจากระบบ
-// ===================================
+// ========================================
+// 6) ออกจากระบบ
+// ========================================
 
-const logoutBtn = document.getElementById("logoutBtn");
+const logoutButton = document.getElementById("logoutBtn");
 
-if (logoutBtn) {
-  logoutBtn.addEventListener("click", async () => {
+if (logoutButton) {
+  logoutButton.addEventListener("click", async () => {
+    logoutButton.disabled = true;
+
     const { error } = await db.auth.signOut();
 
     if (error) {
       alert("ออกจากระบบไม่สำเร็จ: " + error.message);
+      logoutButton.disabled = false;
       return;
     }
 
-    location.reload();
+    window.location.reload();
   });
 }
 
 
-// ===================================
-// 8. เริ่มต้นตรวจสอบเมื่อเปิดหน้า Admin
-// ===================================
+// ========================================
+// 7) เมื่อเปิดหน้า admin ให้ตรวจ Session ทันที
+// ========================================
 
 if (document.getElementById("dashboard")) {
   checkAdmin();
