@@ -1,81 +1,117 @@
-
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin - ระบบจัดการนักศึกษา</title>
-<link rel="stylesheet" href="style.css">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script defer src="app.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - ระบบจัดการนักศึกษา</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <!-- เชื่อมต่อ Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script defer src="app.js"></script>
 </head>
+
 <body>
 
-<div class="container admin-container">
+    <div class="container admin-container">
 
-  <div class="header">
-    <h1>ระบบจัดการข้อมูลนักศึกษา</h1>
-    <p>ADMIN DASHBOARD</p>
-  </div>
+        <!-- ส่วนหัว -->
+        <div class="header">
+            <h1>ระบบจัดการข้อมูลนักศึกษา</h1>
+            <p>ADMIN DASHBOARD</p>
+        </div>
 
-  <div id="loginBox">
-    <h2>เข้าสู่ระบบ Admin</h2>
+        <!-- ส่วนเข้าสู่ระบบ Admin -->
+        <div id="loginBox">
+            <h2>เข้าสู่ระบบ Admin</h2>
 
-    <form id="loginForm">
-      <label>อีเมล</label>
-      <input type="email" id="email" required placeholder="Admin Email">
+            <form id="loginForm">
 
-      <label>รหัสผ่าน</label>
-      <input type="password" id="password" required placeholder="Password">
+                <label for="email">อีเมล</label>
+                <input
+                    type="email"
+                    id="email"
+                    required
+                    placeholder="Admin Email"
+                >
 
-      <button type="submit">เข้าสู่ระบบ</button>
-      <p id="loginMessage"></p>
-    </form>
-  </div>
+                <label for="password">รหัสผ่าน</label>
+                <input
+                    type="password"
+                    id="password"
+                    required
+                    placeholder="Password"
+                >
 
-  <div id="dashboard" hidden>
+                <button type="submit">เข้าสู่ระบบ</button>
 
-    <div class="dashboard-header">
-      <h2>ข้อมูลนักศึกษาทั้งหมด</h2>
-      <button type="button" id="logoutBtn" class="logout">
-        ออกจากระบบ
-      </button>
+                <p id="loginMessage"></p>
+
+            </form>
+        </div>
+
+        <!-- ส่วนแสดงข้อมูลนักศึกษา -->
+        <div id="dashboard" hidden>
+
+            <div class="dashboard-header">
+                <h2>ข้อมูลนักศึกษาทั้งหมด</h2>
+
+                <button
+                    type="button"
+                    id="logoutBtn"
+                    class="logout"
+                >
+                    ออกจากระบบ
+                </button>
+            </div>
+
+            <!-- จำนวนผู้ลงทะเบียน -->
+            <div class="stats">
+                <div class="stat-card">
+                    <h3>จำนวนผู้ลงทะเบียน</h3>
+                    <p id="totalStudents">0</p>
+                </div>
+            </div>
+
+            <!-- ปุ่มรีเฟรช -->
+            <button
+                type="button"
+                id="refreshBtn"
+                class="refresh"
+            >
+                รีเฟรชข้อมูล
+            </button>
+
+            <!-- ตารางข้อมูลนักศึกษา -->
+            <div class="table-wrapper">
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ลำดับ</th>
+                            <th>ชื่อ-นามสกุล</th>
+                            <th>อายุ</th>
+                            <th>แผนก</th>
+                            <th>สาขา</th>
+                            <th>เลขนักศึกษา</th>
+                            <th>ระดับชั้น</th>
+                            <th>คติประจำใจ</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="studentTable">
+                        <!-- ข้อมูลจาก Supabase จะแสดงตรงนี้ -->
+                    </tbody>
+                </table>
+
+            </div>
+
+            <p id="adminMessage"></p>
+
+        </div>
+
     </div>
-
-    <div class="stats">
-      <div class="stat-card">
-        <h3>จำนวนผู้ลงทะเบียน</h3>
-        <p id="totalStudents">0</p>
-      </div>
-    </div>
-
-    <button type="button" id="refreshBtn" class="refresh">
-      รีเฟรชข้อมูล
-    </button>
-
-    <div class="table-wrapper">
-      <table>
-        <thead>
-          <tr>
-            <th>ลำดับ</th>
-            <th>ชื่อ-นามสกุล</th>
-            <th>อายุ</th>
-            <th>แผนก</th>
-            <th>สาขา</th>
-            <th>เลขนักศึกษา</th>
-            <th>ระดับชั้น</th>
-            <th>คติประจำใจ</th>
-          </tr>
-        </thead>
-        <tbody id="studentTable">
-        </tbody>
-      </table>
-    </div>
-
-    <p id="adminMessage"></p>
-
-  </div>
-</div>
 
 </body>
 </html>
